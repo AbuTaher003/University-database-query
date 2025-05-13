@@ -47,7 +47,7 @@ SELECT DISTINCT i.name, t.course_id
 FROM instructor i
 JOIN teaches t
 ON i.ID = t.ID;
-f```
+```
 
 ### 6. Find the names of all instructors whose salary is greater than at least one instructor in the Biology department.
 
