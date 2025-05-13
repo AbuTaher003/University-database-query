@@ -156,7 +156,14 @@ AND
 Explanation: This query finds all `course_id`s taught in Fall-2009 but not in Spring-2010.
 
 ```sql
-SELECT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) AND NOT course_id IN (SELECT course_id FROM section WHERE semester = 'Spring' AND year = 2010);
+SELECT course_id
+FROM section
+WHERE (semester = 'Fall' AND year = 2009)
+AND NOT course_id IN (
+  SELECT course_id
+  FROM section
+  WHERE semester = 'Spring' AND year = 2010
+);
 ```
 
 ### 16. Find all instructors who appear in the instructor relation with null values for salary.
@@ -172,7 +179,9 @@ SELECT * FROM instructor WHERE salary IS NULL;
 Explanation: This query calculates the average salary of instructors in the 'Finance' department.
 
 ```sql
-SELECT AVG(salary) FROM instructor WHERE dept_name = 'Finance';
+SELECT AVG(salary)
+FROM instructor
+WHERE dept_name = 'Finance';
 ```
 
 ### 18. Find the total number of instructors who teach a course in the Spring-2010 semester.
@@ -180,7 +189,14 @@ SELECT AVG(salary) FROM instructor WHERE dept_name = 'Finance';
 Explanation: This query counts the distinct instructors teaching a course in the Spring-2010 semester.
 
 ```sql
-SELECT COUNT(DISTINCT i.ID) FROM instructor i JOIN teaches t ON i.ID = t.ID JOIN section s ON t.course_id = s.course_id AND t.sec_id = s.sec_id WHERE s.semester = 'Spring' AND s.year = 2010;
+SELECT COUNT(DISTINCT i.ID)
+FROM instructor i
+JOIN teaches t
+ON i.ID = t.ID
+JOIN section s
+ON t.course_id = s.course_id AND t.sec_id = s.sec_id
+WHERE s.semester = 'Spring' AND s.year = 2010;
+
 ```
 
 ### 19. Find the average salary in each department.
@@ -188,7 +204,9 @@ SELECT COUNT(DISTINCT i.ID) FROM instructor i JOIN teaches t ON i.ID = t.ID JOIN
 Explanation: This query calculates the average salary of instructors in each department.
 
 ```sql
-SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name;
+SELECT dept_name, AVG(salary)
+FROM instructor
+GROUP BY dept_name;
 ```
 
 ### 20. Find the number of instructors in each department who teach a course in the Spring-2010 semester.
@@ -196,7 +214,17 @@ SELECT dept_name, AVG(salary) FROM instructor GROUP BY dept_name;
 Explanation: This query finds the number of instructors in each department who taught a course in Spring-2010.
 
 ```sql
-SELECT d.dept_name, COUNT(DISTINCT i.ID) FROM department d LEFT JOIN instructor i ON d.dept_name = i.dept_name LEFT JOIN teaches t ON i.ID = t.ID LEFT JOIN section s ON t.course_id = s.course_id AND t.sec_id = s.sec_id AND s.semester = 'Spring' AND s.year = 2010 GROUP BY d.dept_name;
+SELECT d.dept_name, COUNT(DISTINCT i.ID)
+FROM department d
+LEFT JOIN instructor i
+ON d.dept_name = i.dept_name
+LEFT JOIN teaches t
+ON i.ID = t.ID
+LEFT JOIN section s
+ON t.course_id = s.course_id AND t.sec_id = s.sec_id
+AND s.semester = 'Spring' AND s.year = 2010
+GROUP BY d.dept_name;
+
 ```
 
 ### 21. List out the departments where the average salary of the instructors is more than \$42,000.
@@ -204,7 +232,10 @@ SELECT d.dept_name, COUNT(DISTINCT i.ID) FROM department d LEFT JOIN instructor 
 Explanation: This query finds departments where the average salary of instructors is greater than 42,000.
 
 ```sql
-SELECT dept_name FROM instructor GROUP BY dept_name HAVING AVG(salary) > 42000;
+SELECT dept_name
+FROM instructor
+GROUP BY dept_name
+HAVING AVG(salary) > 42000;
 ```
 
 ### 22. For each course section offered in 2009, find the average total credits (tot cred) of all students enrolled in the section, if the section had at least 2 students.
@@ -212,7 +243,13 @@ SELECT dept_name FROM instructor GROUP BY dept_name HAVING AVG(salary) > 42000;
 Explanation: This query finds the average total credits of students in each course section offered in 2009 with at least two students.
 
 ```sql
-SELECT s.course_id, s.sec_id, AVG(t.tot_cred) as avg_tot_cred FROM section s JOIN takes t ON s.course_id = t.course_id AND s.sec_id = t.sec_id AND s.year = 2009 GROUP BY s.course_id, s.sec_id HAVING COUNT(DISTINCT t.ID) >= 2;
+SELECT s.course_id, s.sec_id, AVG(t.tot_cred) as avg_tot_cred
+FROM section s
+JOIN takes t
+ON s.course_id = t.course_id AND s.sec_id = t.sec_id AND s.year = 2009
+GROUP BY s.course_id, s.sec_id
+HAVING COUNT(DISTINCT t.ID) >= 2;
+
 ```
 
 ### 23. Find all the courses taught in both the Fall-2009 and Spring-2010 semesters.
@@ -220,7 +257,14 @@ SELECT s.course_id, s.sec_id, AVG(t.tot_cred) as avg_tot_cred FROM section s JOI
 Explanation: This query selects all `course_id`s taught in both Fall-2009 and Spring-2010.
 
 ```sql
-SELECT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) AND course_id IN (SELECT course_id FROM section WHERE semester = 'Spring' AND year = 2010);
+SELECT course_id
+FROM section
+WHERE (semester = 'Fall' AND year = 2009)
+AND course_id IN (
+  SELECT course_id
+  FROM section
+  WHERE semester = 'Spring' AND year = 2010
+);
 ```
 
 ### 24. Find all the courses taught in the Fall-2009 semester but not in the Spring-2010 semester.
@@ -228,7 +272,14 @@ SELECT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) AND cour
 Explanation: This query selects all `course_id`s taught in Fall-2009 but not in Spring-2010.
 
 ```sql
-SELECT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) AND NOT course_id IN (SELECT course_id FROM section WHERE semester = 'Spring' AND year = 2010);
+SELECT course_id
+FROM section
+WHERE (semester = 'Fall' AND year = 2009)
+AND NOT course_id IN (
+  SELECT course_id
+  FROM section
+  WHERE semester = 'Spring' AND year = 2010
+);
 ```
 
 ### 25. Select the names of instructors whose names are neither 'Mozart' nor 'Einstein'.
@@ -236,7 +287,9 @@ SELECT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) AND NOT 
 Explanation: This query selects the `name` of instructors whose names are not 'Mozart' or 'Einstein'.
 
 ```sql
-SELECT name FROM instructor WHERE name NOT IN ('Mozart', 'Einstein');
+SELECT name
+FROM instructor
+WHERE name NOT IN ('Mozart', 'Einstein');
 ```
 
 ### 26. Find the total number of (distinct) students who have taken course sections taught by the instructor with ID 110011.
@@ -255,14 +308,30 @@ WHERE te.ID = '110011';
 ### 27. Find the ID and names of all instructors whose salary is greater than at least one instructor in the History department.
 Explanation: This query finds the ID and name of instructors whose salary is greater than any instructor in the 'History' department.
 ```sql
-SELECT ID, name FROM instructor WHERE salary > ANY (SELECT salary FROM instructor WHERE dept_name = 'History');
+SELECT ID, name
+FROM instructor
+WHERE salary > ANY (
+  SELECT salary
+  FROM instructor
+  WHERE dept_name = 'History'
+);
+
 ```
 
 
 ### 28. Find the names of the students who have enrolled in at least one course taught by the instructor with ID 110011.
 Explanation: This query selects the names of students who have enrolled in at least one course taught by the instructor with ID 110011.
 ```sql
-SELECT DISTINCT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN section sec ON t.course_id = sec.course_id AND t.sec_id = sec.sec_id JOIN teaches te ON sec.course_id = te.course_id AND sec.sec_id = te.sec_id WHERE te.ID = '110011';
+SELECT DISTINCT s.name
+FROM student s
+JOIN takes t
+ON s.ID = t.ID
+JOIN section sec
+ON t.course_id = sec.course_id AND t.sec_id = sec.sec_id
+JOIN teaches te
+ON sec.course_id = te.course_id AND sec.sec_id = te.sec_id
+WHERE te.ID = '110011';
+
 ````
 
 ### 29. Find all the courses that have been taught by instructors from either the Physics or Chemistry department.
