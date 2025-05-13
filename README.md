@@ -211,7 +211,12 @@ SELECT name FROM instructor WHERE name NOT IN ('Mozart', 'Einstein');
 Explanation: This query counts the distinct students who have taken courses taught by the instructor with ID 110011.
 
 ```sql
-SELECT COUNT(DISTINCT t.ID) FROM teaches te JOIN takes t ON te.course_id = t.course_id AND te.sec_id = t.sec_id WHERE te.ID = '110011';
+SELECT COUNT(DISTINCT t.ID)
+FROM teaches te
+JOIN takes t
+ON te.course_id = t.course_id 
+AND te.sec_id = t.sec_id
+WHERE te.ID = '110011';
 ```
 
 ### 27. Find the ID and names of all instructors whose salary is greater than at least one instructor in the History department.
