@@ -43,15 +43,24 @@ SELECT name FROM instructor WHERE dept_name = 'Computer Science' AND salary > 70
 Explanation: This query joins the `instructor` and `teaches` tables to find instructors and the courses they taught.
 
 ```sql
-SELECT DISTINCT i.name, t.course_id FROM instructor i JOIN teaches t ON i.ID = t.ID;
-```
+SELECT DISTINCT i.name, t.course_id
+FROM instructor i
+JOIN teaches t
+ON i.ID = t.ID;
+f```
 
 ### 6. Find the names of all instructors whose salary is greater than at least one instructor in the Biology department.
 
 Explanation: This query finds the instructors whose salary is greater than the salary of at least one instructor in the 'Biology' department.
 
 ```sql
-SELECT i.name FROM instructor i WHERE salary > ANY ( SELECT salary FROM instructor WHERE dept_name = 'Biology');
+SELECT i.name
+FROM instructor i
+WHERE salary > ANY (
+  SELECT salary
+  FROM instructor
+  WHERE dept_name = 'Biology'
+);
 ```
 
 ### 7. Find the advisor of the student with ID 12345.
@@ -59,7 +68,11 @@ SELECT i.name FROM instructor i WHERE salary > ANY ( SELECT salary FROM instruct
 Explanation: This query joins the `instructor` and `advisor` tables to find the advisor of the student with ID 12345.
 
 ```sql
-SELECT i.name FROM instructor i JOIN advisor a ON i.ID = a.i_ID WHERE a.s_ID = '12345';
+SELECT i.name
+FROM instructor i
+JOIN advisor a
+ON i.ID = a.i_ID
+WHERE a.s_ID = '12345';
 ```
 
 ### 8. Find the average salary of all instructors.
@@ -67,7 +80,8 @@ SELECT i.name FROM instructor i JOIN advisor a ON i.ID = a.i_ID WHERE a.s_ID = '
 Explanation: This query calculates the average salary of all instructors.
 
 ```sql
-SELECT AVG(salary) FROM instructor;
+SELECT AVG(salary)
+FROM instructor;
 ```
 
 ### 9. Find the names of all departments whose building name includes the substring Watson.
@@ -75,7 +89,9 @@ SELECT AVG(salary) FROM instructor;
 Explanation: This query finds department names where the building name includes 'Watson'.
 
 ```sql
-SELECT dept_name FROM department WHERE building LIKE '%Watson%';
+SELECT dept_name
+FROM department
+WHERE building LIKE '%Watson%';
 ```
 
 ### 10. Find the names of instructors with salary amounts between \$90,000 and \$100,000.
@@ -83,7 +99,9 @@ SELECT dept_name FROM department WHERE building LIKE '%Watson%';
 Explanation: This query selects the `name` of instructors whose salary is between 90,000 and 100,000.
 
 ```sql
-SELECT name FROM instructor WHERE salary BETWEEN 90000 AND 100000;
+SELECT name
+FROM instructor
+WHERE salary BETWEEN 90000 AND 100000;
 ```
 
 ### 11. Find the instructor names and the courses they taught for all instructors in the Biology department who have taught some course.
@@ -91,7 +109,12 @@ SELECT name FROM instructor WHERE salary BETWEEN 90000 AND 100000;
 Explanation: This query finds the `name` of instructors in the 'Biology' department and the courses they taught.
 
 ```sql
-SELECT i.name, t.course_id FROM instructor i JOIN teaches t ON i.ID = t.ID WHERE i.dept_name = 'Biology';
+SELECT i.name, t.course_id
+FROM instructor i
+JOIN teaches t
+ON i.ID = t.ID
+WHERE i.dept_name = 'Biology';
+
 ```
 
 ### 12. Find the courses taught in Fall-2009 semester.
@@ -99,7 +122,9 @@ SELECT i.name, t.course_id FROM instructor i JOIN teaches t ON i.ID = t.ID WHERE
 Explanation: This query selects the `course_id` of all courses taught in the Fall-2009 semester.
 
 ```sql
-SELECT course_id FROM section WHERE semester = 'Fall' AND year = 2009;
+SELECT course_id
+FROM section
+WHERE semester = 'Fall' AND year = 2009;
 ```
 
 ### 13. Find the set of all courses taught either in Fall-2009 or in Spring-2010.
@@ -107,7 +132,11 @@ SELECT course_id FROM section WHERE semester = 'Fall' AND year = 2009;
 Explanation: This query selects all `course_id`s taught either in the Fall-2009 or Spring-2010 semesters.
 
 ```sql
-SELECT DISTINCT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) OR (semester = 'Spring' AND year = 2010);
+SELECT DISTINCT course_id
+FROM section
+WHERE (semester = 'Fall' AND year = 2009)
+OR
+(semester = 'Spring' AND year = 2010);
 ```
 
 ### 14. Find the set of all courses taught in the Fall-2009 as well as in Spring-2010.
@@ -115,7 +144,11 @@ SELECT DISTINCT course_id FROM section WHERE (semester = 'Fall' AND year = 2009)
 Explanation: This query finds all `course_id`s taught in both Fall-2009 and Spring-2010.
 
 ```sql
-SELECT course_id FROM section WHERE (semester = 'Fall' AND year = 2009) AND (semester = 'Spring' AND year = 2010);
+SELECT course_id
+FROM section
+WHERE (semester = 'Fall' AND year = 2009)
+AND
+(semester = 'Spring' AND year = 2010);
 ```
 
 ### 15. Find all courses taught in the Fall-2009 semester but not in the Spring-2010 semester.
