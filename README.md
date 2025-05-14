@@ -351,9 +351,10 @@ WHERE i.dept_name IN ('Physics', 'Chemistry');
 Explanation: This query finds the number of courses offered by each department by counting `course_id` in each department.
 
 ```sql
-SELECT dept_name, COUNT(DISTINCT course_id)
-FROM section
-GROUP BY dept_name;
+select d.dept_name, count(DISTINCT s.course_id) as Number_of_courses
+from section s join department d
+on d.building = s.building
+group by course_id
 ```
 
 ### 31. List all students who have enrolled in all courses offered in the Spring-2010 semester.
