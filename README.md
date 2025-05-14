@@ -365,15 +365,18 @@ WHERE NOT EXISTS (
 ```sql
 SELECT course_id
 FROM section
+WHERE year = 2009
 GROUP BY course_id
-HAVING COUNT(DISTINCT CONCAT(semester, year)) <= 1;
+HAVING COUNT(DISTINCT semester) <= 1;
 ```
 ### 33. Find all courses that were offered at least twice in 2009.
 ```sql
 SELECT course_id
 FROM section
+WHERE year = 2009
 GROUP BY course_id
-HAVING COUNT(DISTINCT CONCAT(semester, year )) >= 2;
+HAVING COUNT(DISTINCT semester) >= 2;
+
 ```
 ### 34. Find the average instructors9 salaries of those departments where the average salary is
 greater than $42,000.
@@ -408,8 +411,7 @@ SELECT title
 FROM course
 WHERE dept_name = 'Comp. Sci.' AND credits = 3;
 ```
-### 38. Find the IDs of all students who were taught by an instructor named Einstein; make sure
-there are no duplicates in the result.
+### 38. Find the IDs of all students who were taught by an instructor named Einstein; make sure there are no duplicates in the result.
 ```sql
 SELECT DISTINCT t.ID
 FROM takes t
@@ -432,4 +434,95 @@ WHERE salary = (
   SELECT MAX(salary)
   FROM instructor
 );
+```
+### 41. Find the enrollment of each section that was offered in Autumn-2009. 
+```sql
+SELECT course_id, sec_id, COUNT(ID) AS enrollment
+FROM takes
+WHERE semester = 'Autumn' AND year = 2009
+GROUP BY course_id, sec_id;
+```
+
+### 42.  Find the maximum enrollment, across all sections, in Autumn-2009.
+```sql
+SELECT MAX(enrollment) AS max_enrollment
+FROM (
+    SELECT course_id, sec_id, COUNT(ID) AS enrollment
+    FROM takes
+    WHERE semester = 'Autumn' AND year = 2009
+    GROUP BY course_id, sec_id
+) AS section_enrollments;
+```
+### 43.  Find the salaries after the following operation: Increase the salary of each instructor in the
+Comp. Sci. department by 10%.
+```sql
+SELECT ID, name, dept_name, salary * 1.10 AS increased_salary
+FROM instructor
+WHERE dept_name = 'Comp. Sci.';
+```
+### 44.  Find all students who have not taken a course.
+```sql
+SELECT *
+FROM student
+WHERE ID NOT IN (
+    SELECT ID FROM takes
+);
+```
+### 45. List all course sections offered by the Physics department in the Fall-2009 semester, with
+the building and room number of each section.
+```sql
+SELECT course_id, sec_id, building, room_number
+FROM section
+WHERE semester = 'Fall' AND year = 2009
+  AND course_id IN (
+      SELECT course_id
+      FROM course
+      WHERE dept_name = 'Physics'
+  );
+```
+### 46. Find the student names who take courses in Spring-2010 semester at Watson Building.
+```sql
+SELECT DISTINCT student.name
+FROM student
+JOIN takes ON student.ID = takes.ID
+JOIN section ON takes.course_id = section.course_id 
+            AND takes.sec_id = section.sec_id 
+            AND takes.semester = section.semester 
+            AND takes.year = section.year
+WHERE section.semester = 'Spring' 
+  AND section.year = 2010 
+  AND section.building = 'Watson';
+```
+### 47. List the students who take courses teaches by Brandt.
+```sql
+SELECT DISTINCT student.name
+FROM student
+JOIN takes ON student.ID = takes.ID
+JOIN teaches ON takes.course_id = teaches.course_id 
+JOIN instructor ON teaches.ID = instructor.ID
+WHERE instructor.name = 'Brandt';
+```
+### 48. Find out the average salary of the instructor in each department.
+```sql
+SELECT dept_name, AVG(salary) AS avg_salary
+FROM instructor
+GROUP BY dept_name;
+```
+### 49. Find the number of students who take the course titled 8Intro. To Computer Science.
+```sql
+SELECT COUNT(DISTINCT ID) AS num_students
+FROM takes
+WHERE course_id = '8Intro. To Computer Science';
+```
+### 50. Find out the total salary of the instructors of the Computer Science department who take a course(s) in Watson building.
+```sql
+SELECT SUM(salary) AS total_salary
+FROM instructor
+WHERE dept_name = 'Computer Science'
+  AND ID IN (
+      SELECT teaches.ID
+      FROM teaches
+      JOIN section ON teaches.course_id = section.course_id
+      WHERE section.building = 'Watson'
+  );
 ```
