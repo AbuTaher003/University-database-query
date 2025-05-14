@@ -243,12 +243,12 @@ HAVING AVG(salary) > 42000;
 Explanation: This query finds the average total credits of students in each course section offered in 2009 with at least two students.
 
 ```sql
-SELECT s.course_id, s.sec_id, AVG(t.tot_cred) as avg_tot_cred
-FROM section s
-JOIN takes t
-ON s.course_id = t.course_id AND s.sec_id = t.sec_id AND s.year = 2009
-GROUP BY s.course_id, s.sec_id
-HAVING COUNT(DISTINCT t.ID) >= 2;
+select s.course_id, s.sec_id, avg(p.tot_cred) as avg_tot_cred
+from section s 
+join takes t join student p 
+on s.course_id = t.course_id and t.sec_id = s.sec_id and p.ID = t.ID and s.year = 2009
+group by s.course_id, s.sec_id 
+having count(distinct t.ID)>=2
 
 ```
 
@@ -339,7 +339,11 @@ WHERE te.ID = '110011';
 Explanation: This query finds all `course_id`s taught by instructors in the 'Physics' or 'Chemistry' departments.
 
 ```sql
-SELECT DISTINCT t.course_id FROM teaches t JOIN instructor i ON t.ID = i.ID WHERE i.dept_name IN ('Physics', 'Chemistry');
+SELECT DISTINCT t.course_id
+FROM teaches t
+JOIN instructor i
+ON t.ID = i.ID
+WHERE i.dept_name IN ('Physics', 'Chemistry');
 ```
 
 ### 30. Find the number of courses offered by each department.
@@ -347,7 +351,9 @@ SELECT DISTINCT t.course_id FROM teaches t JOIN instructor i ON t.ID = i.ID WHER
 Explanation: This query finds the number of courses offered by each department by counting `course_id` in each department.
 
 ```sql
-SELECT dept_name, COUNT(DISTINCT course_id) FROM section GROUP BY dept_name;
+SELECT dept_name, COUNT(DISTINCT course_id)
+FROM section
+GROUP BY dept_name;
 ```
 
 ### 31. List all students who have enrolled in all courses offered in the Spring-2010 semester.
@@ -355,7 +361,17 @@ SELECT dept_name, COUNT(DISTINCT course_id) FROM section GROUP BY dept_name;
 Explanation: This query selects the students who have enrolled in every course offered in Spring-2010.
 
 ```sql
-SELECT s.name FROM student s WHERE NOT EXISTS (SELECT course_id FROM section WHERE semester = 'Spring' AND year = 2010 EXCEPT SELECT t.course_id FROM takes t WHERE t.ID = s.ID);
+SELECT s.name
+FROM student s
+WHERE NOT EXISTS (
+  SELECT course_id
+  FROM section
+  WHERE semester = 'Spring' AND year = 2010
+  EXCEPT
+  SELECT t.course_id
+  FROM takes t
+  WHERE t.ID = s.ID
+);
 ```
 
 ### 32. Find the names of instructors who have taught the course 'CS101' in both Fall-2009 and Spring-2010.
@@ -363,7 +379,17 @@ SELECT s.name FROM student s WHERE NOT EXISTS (SELECT course_id FROM section WHE
 Explanation: This query selects the names of instructors who taught 'CS101' in both Fall-2009 and Spring-2010.
 
 ```sql
-SELECT DISTINCT i.name FROM instructor i JOIN teaches t ON i.ID = t.ID JOIN section s ON t.course_id = s.course_id AND t.sec_id = s.sec_id WHERE s.course_id = 'CS101' AND ((s.semester = 'Fall' AND s.year = 2009) OR (s.semester = 'Spring' AND s.year = 2010));
+SELECT DISTINCT i.name
+FROM instructor i
+JOIN teaches t
+ON i.ID = t.ID
+JOIN section s
+ON t.course_id = s.course_id AND t.sec_id = s.sec_id
+WHERE s.course_id = 'CS101'
+AND (
+  (s.semester = 'Fall' AND s.year = 2009) OR
+  (s.semester = 'Spring' AND s.year = 2010)
+);
 ```
 
 ### 33. Find the names of all instructors in the 'Mathematics' department who have taught at least one course with a course ID of 'MATH101'.
@@ -371,15 +397,26 @@ SELECT DISTINCT i.name FROM instructor i JOIN teaches t ON i.ID = t.ID JOIN sect
 Explanation: This query finds instructors in the 'Mathematics' department who have taught at least one 'MATH101' course.
 
 ```sql
-SELECT i.name FROM instructor i JOIN teaches t ON i.ID = t.ID WHERE i.dept_name = 'Mathematics' AND t.course_id = 'MATH101';
+SELECT i.name
+FROM instructor i
+JOIN teaches t
+ON i.ID = t.ID
+WHERE i.dept_name = 'Mathematics' AND t.course_id = 'MATH101';
 ```
+
 
 ### 34. Find the total number of students who have enrolled in courses taught by instructor with ID '12345'.
 
 Explanation: This query finds the total number of students who have enrolled in courses taught by the instructor with ID '12345'.
 
 ```sql
-SELECT COUNT(DISTINCT t.ID) FROM takes t JOIN section s ON t.course_id = s.course_id AND t.sec_id = s.sec_id JOIN teaches te ON s.course_id = te.course_id AND s.sec_id = te.sec_id WHERE te.ID = '12345';
+SELECT COUNT(DISTINCT t.ID)
+FROM takes t
+JOIN section s
+ON t.course_id = s.course_id AND t.sec_id = s.sec_id
+JOIN teaches te
+ON s.course_id = te.course_id AND s.sec_id = te.sec_id
+WHERE te.ID = '12345';
 ```
 
 ### 35. List the departments where the average salary is greater than \$60,000.
@@ -387,7 +424,10 @@ SELECT COUNT(DISTINCT t.ID) FROM takes t JOIN section s ON t.course_id = s.cours
 Explanation: This query selects the departments where the average salary of instructors is greater than 60,000.
 
 ```sql
-SELECT dept_name FROM instructor GROUP BY dept_name HAVING AVG(salary) > 60000;
+SELECT dept_name
+FROM instructor
+GROUP BY dept_name
+HAVING AVG(salary) > 60000;
 ```
 
 ### 36. List the names of the students who have enrolled in 'CS101' in Fall-2009.
