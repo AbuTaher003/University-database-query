@@ -528,20 +528,20 @@ WHERE dept_name = 'Computer Science'
 ```sql
 SELECT title
 FROM course
-WHERE course_id IN (
-  SELECT course_id
-  FROM section
-  JOIN time_slot USING(time_slot_id)
-  WHERE start_time BETWEEN '10:00:00' AND '12:00:00'
-);
+JOIN section
+ON course.course_id = section.course_id
+JOIN time_slot
+ON section.time_slot_id = time_slot.time_slot_id
+WHERE start_hr >= 10 AND end_hr <= 12;
+
 ```
 ### 52. List the course names where CS-1019 is the pre-requisite course.
 ```sql
-SELECT course.course_name
-FROM course
-JOIN prereq ON course.course_id = prereq.course_id
-WHERE prereq.prereq_id = 'CS-1019';
-
+SELECT c.title
+FROM course c
+JOIN prereq p
+ON c.course_id = p.course_id
+WHERE p.prereq_id = 'CS1019';
 ```
 ### 53. List the student names who get more than B+ grades in their respective courses.
 ```sql
