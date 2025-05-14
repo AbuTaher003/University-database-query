@@ -453,8 +453,7 @@ FROM (
     GROUP BY course_id, sec_id
 ) AS section_enrollments;
 ```
-### 43.  Find the salaries after the following operation: Increase the salary of each instructor in the
-Comp. Sci. department by 10%.
+### 43.  Find the salaries after the following operation: Increase the salary of each instructor in the Comp. Sci. department by 10%.
 ```sql
 SELECT ID, name, dept_name, salary * 1.10 AS increased_salary
 FROM instructor
@@ -468,8 +467,7 @@ WHERE ID NOT IN (
     SELECT ID FROM takes
 );
 ```
-### 45. List all course sections offered by the Physics department in the Fall-2009 semester, with
-the building and room number of each section.
+### 45. List all course sections offered by the Physics department in the Fall-2009 semester, with the building and room number of each section.
 ```sql
 SELECT course_id, sec_id, building, room_number
 FROM section
@@ -508,11 +506,11 @@ SELECT dept_name, AVG(salary) AS avg_salary
 FROM instructor
 GROUP BY dept_name;
 ```
-### 49. Find the number of students who take the course titled 8Intro. To Computer Science.
+### 49. Find the number of students who take the course titled Intro. To Computer Science.
 ```sql
 SELECT COUNT(DISTINCT ID) AS num_students
 FROM takes
-WHERE course_id = '8Intro. To Computer Science';
+WHERE course_id = 'Intro. To Computer Science';
 ```
 ### 50. Find out the total salary of the instructors of the Computer Science department who take a course(s) in Watson building.
 ```sql
@@ -525,4 +523,179 @@ WHERE dept_name = 'Computer Science'
       JOIN section ON teaches.course_id = section.course_id
       WHERE section.building = 'Watson'
   );
+```
+### 51. Find out the course titles which starts between 10:00 to 12:00.
+```sql
+SELECT title
+FROM course
+WHERE course_id IN (
+  SELECT course_id
+  FROM section
+  JOIN time_slot USING(time_slot_id)
+  WHERE start_time BETWEEN '10:00:00' AND '12:00:00'
+);
+```
+### 52. List the course names where CS-1019 is the pre-requisite course.
+```sql
+SELECT course.course_name
+FROM course
+JOIN prereq ON course.course_id = prereq.course_id
+WHERE prereq.prereq_id = 'CS-1019';
+
+```
+### 53. List the student names who get more than B+ grades in their respective courses.
+```sql
+SELECT name
+FROM student
+WHERE ID IN (
+  SELECT ID
+  FROM takes
+  WHERE grade > 'B+'
+);
+```
+### 54. Find the student who takes the maximum credit from each department.
+```sql
+SELECT s.ID, s.name, s.dept_name, MAX(tot_cred) as max_credits
+FROM student s
+GROUP BY s.dept_name;
+```
+### 55. Find out the student ID and grades who take a course(s) in Spring-2009 semester.
+```sql
+SELECT ID, grade
+FROM takes
+WHERE semester = 'Spring' AND year = 2009;
+```
+### 56. Find the building(s) where the student takes the course titled Image Processing.
+```sql
+SELECT DISTINCT building
+FROM section
+WHERE course_id = (
+  SELECT course_id FROM course WHERE title = 'Image Processing'
+);
+```
+### 57. Find the room no. and the building where the student from Fall-2009 semester can take a course(s)
+```sql
+SELECT DISTINCT building, room_number
+FROM section
+WHERE semester = 'Fall' AND year = 2009;
+```
+### 58. Find the names of those departments whose budget is higher than that of Astronomy. List them in alphabetic order
+```sql
+SELECT dept_name
+FROM department
+WHERE budget > (
+  SELECT budget FROM department WHERE dept_name = 'Astronomy'
+)
+ORDER BY dept_name;
+```
+### 59. Display a list of all instructors, showing each instructor's ID and the number of sections taught. Make sure to show the number of sections as 0 for instructors who have not taught any section
+```sql
+SELECT i.ID, COUNT(t.course_id) AS total_sections
+FROM instructor i
+LEFT JOIN teaches t ON i.ID = t.ID
+GROUP BY i.ID;
+```
+### 60. For each student who has retaken a course at least twice (i.e., the student has taken the courseat least three times), show the course ID and the student's ID. Please display your results in order of course ID and do not display duplicate rows
+```sql
+SELECT DISTINCT ID, course_id
+FROM takes
+GROUP BY ID, course_id
+HAVING COUNT(*) >= 3
+ORDER BY course_id;
+```
+### 61. Find the names of Biology students who have taken at least 3 Accounting courses
+```sql
+SELECT s.name
+FROM student s
+WHERE s.dept_name = 'Biology' AND s.ID IN (
+  SELECT t.ID
+  FROM takes t
+  JOIN course c ON t.course_id = c.course_id
+  WHERE c.dept_name = 'Accounting'
+  GROUP BY t.ID
+  HAVING COUNT(*) >= 3
+);
+```
+### 62. Find the sections that had maximum enrollment in Fall 2010
+```sql
+SELECT course_id, sec_id, semester, year, COUNT(ID) AS enrollment
+FROM takes
+WHERE semester = 'Fall' AND year = 2010
+GROUP BY course_id, sec_id, semester, year
+HAVING COUNT(ID) = (
+    SELECT MAX(enroll_count)
+    FROM (
+        SELECT COUNT(ID) AS enroll_count
+        FROM takes
+        WHERE semester = 'Fall' AND year = 2010
+        GROUP BY course_id, sec_id
+    ) AS max_enroll
+);
+```
+### 63. Find student names and the number of law courses taken for students who have taken at least half of the available law courses. (These courses are named things like 'Tort Law' or Environmental Law'
+```sql
+SELECT s.name, COUNT(t.course_id) AS law_courses_taken
+FROM student s
+JOIN takes t ON s.ID = t.ID
+JOIN course c ON t.course_id = c.course_id
+WHERE c.dept_name = 'Law'
+GROUP BY s.ID
+HAVING COUNT(t.course_id) >= (
+  SELECT COUNT(*) / 2
+  FROM course
+  WHERE dept_name = 'Law'
+);
+```
+### 64. Find the rank and name of the 10 students who earned the most A grades (A-, A, A+). Use alphabetical order by name to break ties.
+```sql
+SELECT s.name, RANK() OVER (ORDER BY COUNT(t.grade) DESC, s.name) AS rank
+FROM student s
+JOIN takes t ON s.ID = t.ID
+WHERE t.grade IN ('A-', 'A', 'A+')
+GROUP BY s.ID
+LIMIT 10;
+```
+### 65. Find the titles of courses in the Comp. Sci. department that have 3 credits.
+```sql
+SELECT title
+FROM course
+WHERE dept_name = 'Comp. Sci.' AND credits = 3;
+```
+### 66. Find the IDs of all students who were taught by an instructor named Einstein; make sure there are no duplicates in the result.
+```sql
+SELECT DISTINCT t.ID
+FROM takes t
+JOIN teaches te ON t.course_id = te.course_id
+JOIN instructor i ON te.ID = i.ID
+WHERE i.name = 'Einstein';
+```
+### 67. Find the ID and name of each student who has taken at least one Comp. Sci. course; make sure there are no duplicate names in the result.
+```sql
+SELECT DISTINCT s.ID, s.name
+FROM student s
+JOIN takes t ON s.ID = t.ID
+JOIN course c ON t.course_id = c.course_id
+WHERE c.dept_name = 'Comp. Sci.';
+```
+### 68. Find the course id, section id, and building for each section of a Biology course.
+```sql
+SELECT s.course_id, s.sec_id, s.building
+FROM section s
+JOIN course c ON s.course_id = c.course_id
+WHERE c.dept_name = 'Biology';
+```
+### 69. Output instructor names sorted by the ratio of their salary to their department's budget (in ascending order).
+```sql
+SELECT i.name
+FROM instructor i
+JOIN department d ON i.dept_name = d.dept_name
+ORDER BY i.salary / d.budget ASC;
+```
+### 70. Output instructor names and buildings for each building an instructor has taught in. Include instructor names who have not taught any classes (the building name should be NULL in this case).
+```sql
+SELECT i.name, s.building
+FROM instructor i
+LEFT JOIN teaches t ON i.ID = t.ID
+LEFT JOIN section s ON t.course_id = s.course_id AND t.sec_id = s.sec_id
+ORDER BY i.name;
 ```
