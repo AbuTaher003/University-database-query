@@ -569,7 +569,7 @@ WHERE semester = 'Spring' AND year = 2009;
 ```sql
 SELECT DISTINCT building
 FROM section
-WHERE course_id = (
+WHERE course_id in (
   SELECT course_id FROM course WHERE title = 'Image Processing'
 );
 ```
